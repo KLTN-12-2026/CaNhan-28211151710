@@ -1,0 +1,48 @@
+import { LessonContentTypeEnum } from '../enums/lesson-content-type.enum.js';
+import { LessonTranscriptionStatusEnum } from '../enums/lesson-transcription-status.enum.js';
+
+export interface ILessonContent {
+  type: LessonContentTypeEnum;
+  url: string;
+  publicId?: string;
+  fileName?: string;
+  fileSize?: number;
+  mimeType?: string;
+  duration?: number;
+}
+
+export interface ILessonMaterial {
+  id: string;
+  title: string;
+  url: string;
+  fileName: string;
+  fileSize?: number | null;
+  mimeType?: string | null;
+  publicId?: string | null;
+  createdAt?: Date | string;
+}
+
+export interface ILesson {
+  id: string;
+  sectionId: string;
+  title: string;
+  description?: string | null;
+  order: number;
+  content?: ILessonContent | null;
+  materials?: ILessonMaterial[];
+  isPreview: boolean;
+  transcriptionStatus?: LessonTranscriptionStatusEnum;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+  deletedAt?: Date | string | null;
+  createdById?: string | null;
+  updatedById?: string | null;
+}
+
+export interface ICreateLessonPayload {
+  title: string;
+  description?: string | null;
+  order: number;
+  content?: ILessonContent | null;
+  isPreview?: boolean;
+}

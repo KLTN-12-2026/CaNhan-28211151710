@@ -1,0 +1,17 @@
+packages:
+  - 'backend'
+  - 'frontend'
+  - 'share-lib'
+allowBuilds:
+  '@google/genai': false
+  bcrypt: true
+  esbuild: true
+  ffmpeg-static: true
+  protobufjs: false
+  unrs-resolver: true
+onlyBuiltDependencies:
+  - bcrypt
+  - unrs-resolver
+  - esbuild
+  - '@nestjs/core'
+  - ffmpeg-static
