@@ -8,6 +8,8 @@ import { Icon } from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { ADMIN_NAV_ITEMS } from '../constants/admin-navigation';
 import { cn } from '@/lib/utils';
+import { MindlyLogo } from '@/components/brand';
+import { useAdminLogoutRedirect } from './admin-guard';
 
 interface AdminSidebarProps {
   isOpen?: boolean;
@@ -16,7 +18,8 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps): React.JSX.Element {
   const pathname = usePathname();
-  const { user, logout, isLoggingOut } = useAuth();
+  const { user, logout, isLoggingOut } = useAuth({ logoutRedirectTo: '/' });
+  const beginLogoutRedirect = useAdminLogoutRedirect();
 
   const userInitial = user?.firstName?.charAt(0) || user?.email?.charAt(0)?.toUpperCase() || 'A';
   const displayName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.email || 'Quản trị viên';
@@ -41,18 +44,11 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps): React.JSX.
       >
         {/* Brand / Logo Section */}
         <div className="h-16 flex items-center justify-between px-6 border-b border-border/60 shrink-0">
-          <Link href="/admin/users" className="flex items-center gap-3 group">
-            <div className="size-9 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-base shadow-sm group-hover:opacity-95 transition-opacity">
-              <Icon icon="lucide:shield" className="size-5" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-bold tracking-tight text-foreground leading-tight">
-                DATN Portal
-              </span>
-              <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-                Quản Trị Viên
-              </span>
-            </div>
+          <Link href="/admin/dashboard" className="flex items-center gap-2 group" aria-label="Mindly Admin Dashboard">
+            <MindlyLogo variant="auto" className="h-8 w-auto" showSlogan={false} />
+            <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold text-primary tracking-wider uppercase">
+              Admin
+            </span>
           </Link>
 
           {/* Close button for mobile */}
@@ -129,7 +125,10 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps): React.JSX.
           <Button
             variant="outline"
             size="sm"
-            onClick={() => logout()}
+            onClick={() => {
+              beginLogoutRedirect();
+              logout();
+            }}
             disabled={isLoggingOut}
             className="w-full justify-center text-xs text-muted-foreground hover:text-destructive hover:border-destructive/30 hover:bg-destructive/5 transition-colors"
           >

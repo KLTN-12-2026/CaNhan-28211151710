@@ -6,13 +6,16 @@
     "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint src/"
+    "lint": "eslint src/",
+    "audit:ui": "node ../.agent/skills/web-design-guidelines/scripts/audit-ui.mjs src"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
     "@dagrejs/dagre": "^3.1.1",
     "@hookform/resolvers": "^5.9.1",
     "@iconify/react": "^6.0.2",
+    "@lottiefiles/dotlottie-react": "^0.20.0",
+    "@react-oauth/google": "^0.13.5",
     "@tailwindcss/typography": "^0.5.20",
     "@tanstack/react-query": "^5.103.1",
     "@tanstack/react-query-devtools": "^5.103.1",

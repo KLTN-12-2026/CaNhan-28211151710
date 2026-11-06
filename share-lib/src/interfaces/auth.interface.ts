@@ -30,6 +30,43 @@ export interface IJwtPayload {
   sub: string;
   email: string;
   role: RoleEnum;
+  /** Unique token id, used to make every refresh token distinct. */
+  jti?: string;
   iat?: number;
   exp?: number;
+}
+
+export interface IGoogleAuthPayload {
+  idToken: string;
+}
+
+export interface IVerifyEmailPayload {
+  token: string;
+}
+
+export interface IResendVerificationPayload {
+  email: string;
+}
+
+export interface IForgotPasswordPayload {
+  email: string;
+}
+
+export interface IForgotPasswordResponse {
+  message: string;
+}
+
+export interface IResetPasswordPayload {
+  token: string;
+  password: string;
+}
+
+export interface IResetPasswordResponse {
+  message: string;
+}
+
+export interface IRegisterResponse {
+  user: IUserProfile;
+  message: string;
+  emailSent: boolean;
 }

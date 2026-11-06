@@ -21,6 +21,7 @@ import {
 } from 'share-lib';
 import { CourseService } from '../services/course.service.js';
 import { CourseRepository } from '../repositories/course.repository.js';
+import { CourseCategoryRepository } from '../repositories/course-category.repository.js';
 import { SectionRepository } from '../repositories/section.repository.js';
 import { LessonRepository } from '../repositories/lesson.repository.js';
 import { UserRepository } from '../../user/repositories/user.repository.js';
@@ -54,6 +55,9 @@ describe('CourseService', () => {
     softDeleteBySectionId: ReturnType<typeof vi.fn>;
   };
   let mockUserRepository: {
+    findById: ReturnType<typeof vi.fn>;
+  };
+  let mockCourseCategoryRepository: {
     findById: ReturnType<typeof vi.fn>;
   };
   let mockStorageService: {
@@ -119,6 +123,10 @@ describe('CourseService', () => {
       findById: vi.fn(),
     };
 
+    mockCourseCategoryRepository = {
+      findById: vi.fn(),
+    };
+
     mockCls = {
       get: vi.fn().mockReturnValue('instructor_1'),
     };
@@ -131,6 +139,7 @@ describe('CourseService', () => {
 
     service = new CourseService(
       mockCourseRepository as unknown as CourseRepository,
+      mockCourseCategoryRepository as unknown as CourseCategoryRepository,
       mockSectionRepository as unknown as SectionRepository,
       mockLessonRepository as unknown as LessonRepository,
       mockUserRepository as unknown as UserRepository,
@@ -147,11 +156,10 @@ describe('CourseService', () => {
       expect(result).toEqual(activeInstructor);
     });
 
-    it('should pass validation when user is an active ADMIN', async () => {
+    it('should reject an active ADMIN as a course creator', async () => {
       mockUserRepository.findById.mockResolvedValue(activeAdmin);
 
-      const result = await service.validateInstructor('admin_1');
-      expect(result).toEqual(activeAdmin);
+      await expect(service.validateInstructor('admin_1')).rejects.toThrow(ForbiddenException);
     });
 
     it('should throw NotFoundException if instructor does not exist', async () => {
@@ -227,6 +235,18 @@ describe('CourseService', () => {
   });
 
   describe('createCourse', () => {
+    it.each([RoleEnum.ADMIN, RoleEnum.STUDENT])('should reject %s without writing a course', async (role) => {
+      mockUserRepository.findById.mockResolvedValue({ ...activeInstructor, role });
+
+      await expect(service.createCourse({
+        title: 'Forbidden Course',
+        slug: 'forbidden-course',
+        instructorId: 'instructor_1',
+      })).rejects.toThrow(ForbiddenException);
+      expect(mockCourseRepository.create).not.toHaveBeenCalled();
+      expect(mockCourseRepository.findBySlug).not.toHaveBeenCalled();
+    });
+
     it('should reject when price is negative', async () => {
       mockUserRepository.findById.mockResolvedValue(activeInstructor);
       mockCourseRepository.findBySlug.mockResolvedValue(null);
